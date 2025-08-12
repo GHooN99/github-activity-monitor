@@ -12,4 +12,13 @@ export type RepoConfig = {
   name: string;
   /** Activity Source Types to monitor @see ActivitySourceType */
   monitorTypes: ActivitySourceType[];
+  /** 
+   * Patterns to ignore when monitoring activities.
+   * Supports:
+   * - URL patterns: "discussions/123", "issues/456"
+   * - Author patterns: "@username" 
+   * - Keyword patterns: plain text to match in title/body
+   * @example ["discussions/123", "@bot-name", "이벤트"]
+   */
+  ignorePatterns?: string[];
 };
