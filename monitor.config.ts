@@ -23,6 +23,14 @@ export const config: AppVariables = {
     {
       name: "toss/frontend-fundamentals",
       monitorTypes: ["discussion", "discussion_comment"],
+      ignorePatterns: ["discussions/309", "@giscus"],
+      // Optional: Patterns to ignore
+      // ignorePatterns: [
+      //   "discussions/123",     // Ignore specific discussion by ID
+      //   "이벤트",              // Ignore activities containing "이벤트" keyword
+      //   "추첨",                // Ignore activities containing "추첨" keyword
+      //   "@event-bot"           // Ignore activities from user "event-bot"
+      // ],
     },
   ],
 
@@ -60,5 +68,5 @@ export const config: AppVariables = {
    * @example "gemini-1.5-flash-latest", "gpt-4o"
    * @default ""
    */
-  llmModelName: "gemini-2.0-flash-lite", // Or the specific model you intend to use
+  llmModelName: "gemini-2.5-flash", // Or the specific model you intend to use
 };
