@@ -75,6 +75,7 @@ describe("ActivityProcessor", () => {
     processor = new ActivityProcessor({
       config: mockConfig,
       summarizer: mockSummarizer,
+      patternMatchers: new Map(), // Empty Map for tests - no patterns to ignore
     });
 
     // Act
@@ -107,6 +108,7 @@ describe("ActivityProcessor", () => {
     processor = new ActivityProcessor({
       config: mockConfig,
       summarizer: mockSummarizer,
+      patternMatchers: new Map(), // Empty Map for tests - no patterns to ignore
     });
 
     // Create test data
