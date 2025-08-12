@@ -1,6 +1,7 @@
 import { AppConfig } from "../configs/app-config";
 import { ActivityItem } from "../models/activity";
 import { IActivitySummarizer } from "../modules/summarization/summarizer";
+import { IPatternMatcher } from "../modules/filtering/pattern-matcher";
 
 export interface IActivityProcessor {
   processForNotification(activities: ActivityItem[]): Promise<ActivityItem[]>;
@@ -9,6 +10,7 @@ export interface IActivityProcessor {
 interface ActivityProcessorDependencies {
   config: AppConfig;
   summarizer: IActivitySummarizer;
+  patternMatchers: Map<string, IPatternMatcher>;
 }
 
 export class ActivityProcessor implements IActivityProcessor {
@@ -17,7 +19,10 @@ export class ActivityProcessor implements IActivityProcessor {
   public async processForNotification(fetchedActivities: ActivityItem[]): Promise<ActivityItem[]> {
     const { config } = this.dependencies;
 
-    const activitiesByRepo = this.groupActivitiesByRepo(fetchedActivities);
+    // First, filter out ignored activities
+    const nonIgnoredActivities = this.filterIgnoredActivities(fetchedActivities);
+
+    const activitiesByRepo = this.groupActivitiesByRepo(nonIgnoredActivities);
 
     const filteredActivities = this.filterRecentActivitiesByTypePerRepo(
       activitiesByRepo,
@@ -77,6 +82,24 @@ export class ActivityProcessor implements IActivityProcessor {
     return [...activities].sort(
       (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
     );
+  }
+
+  private filterIgnoredActivities(activities: ActivityItem[]): ActivityItem[] {
+    const { patternMatchers } = this.dependencies;
+    const filtered: ActivityItem[] = [];
+    
+    for (const activity of activities) {
+      const matcher = patternMatchers.get(activity.repo);
+      
+      // If no matcher for this repo, or activity should not be ignored, keep it
+      if (!matcher || !matcher.shouldIgnore(activity)) {
+        filtered.push(activity);
+      } else {
+        console.log(`Ignoring activity: ${activity.title} (${activity.url})`);
+      }
+    }
+    
+    return filtered;
   }
 
   private async summarizeIfNeeded(activities: ActivityItem[]): Promise<ActivityItem[]> {

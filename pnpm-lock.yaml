@@ -10,8 +10,8 @@ importers:
   .:
     dependencies:
       "@google/generative-ai":
-        specifier: ^0.24.0
-        version: 0.24.0
+        specifier: ^0.24.1
+        version: 0.24.1
       "@octokit/graphql":
         specifier: ^8.2.2
         version: 8.2.2
@@ -363,10 +363,10 @@ packages:
       }
     engines: { node: ^18.18.0 || ^20.9.0 || >=21.1.0 }
 
-  "@google/generative-ai@0.24.0":
+  "@google/generative-ai@0.24.1":
     resolution:
       {
-        integrity: sha512-fnEITCGEB7NdX0BhoYZ/cq/7WPZ1QS5IzJJfC3Tg/OwkvBetMiVJciyaan297OvE4B9Jg1xvo0zIazX/9sGu1Q==,
+        integrity: sha512-MqO+MLfM6kjxcKoy0p1wRzG3b4ZZXtPI+z2IE26UogS2Cm/XHO+7gGRBh6gcJsOiIVoH93UwKvW4HdgiOZCy9Q==,
       }
     engines: { node: ">=18.0.0" }
 
@@ -2512,7 +2512,7 @@ snapshots:
       "@eslint/core": 0.13.0
       levn: 0.4.1
 
-  "@google/generative-ai@0.24.0": {}
+  "@google/generative-ai@0.24.1": {}
 
   "@humanfs/core@0.19.1": {}
 

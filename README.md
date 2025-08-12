@@ -14,6 +14,7 @@ Key features:
 - AI-powered summarization using Gemini, OpenAI, or other LLM providers
 - Send notifications to Discord or Slack
 - Configurable tracking with flexible repository monitoring options
+- Filter out unwanted activities using patterns (URLs, keywords, authors)
 
 ## CAUTION: Current Implementation Status
 
@@ -87,6 +88,12 @@ export const config = {
     {
       name: "owner/repo",
       monitorTypes: ["discussion", "discussion_comment"],
+      // Optional: Filter out unwanted activities
+      ignorePatterns: [
+        "discussions/123", // Ignore specific discussion by ID
+        "event", // Ignore activities containing "event" keyword
+        "@bot-name", // Ignore activities from specific author
+      ],
     },
     // Add more repositories as needed
   ],
@@ -97,6 +104,20 @@ export const config = {
   llmModelName: "gemini-2.0-flash-lite", // or your preferred model
 };
 ```
+
+### Filtering Activities
+
+You can filter out unwanted activities using the `ignorePatterns` option in your repository configuration. The patterns are automatically detected based on their format:
+
+- **URL/ID patterns**: `discussions/123`, `issues/456`, `pull/789` - Ignores specific discussions, issues, or PRs
+- **Author patterns**: `@username` - Ignores activities from specific users (prefix with `@`)
+- **Keyword patterns**: Any plain text - Ignores activities containing these keywords in title or body
+
+Example use cases:
+
+- Filter out event announcements: Add keywords like "event", "giveaway", "contest"
+- Ignore bot activities: Use patterns like `@dependabot`, `@renovate-bot`
+- Skip specific discussions: Use the discussion ID from its URL
 
 ## Usage
 
@@ -146,6 +167,7 @@ src/
 ├── models/             # Data models and types
 └── modules/
     ├── activity-fetching/    # GitHub API interaction
+    ├── filtering/            # Activity filtering logic
     ├── http-client/          # HTTP client abstraction
     ├── notification/         # Discord/Slack notification
     ├── persistence/          # File system operations
