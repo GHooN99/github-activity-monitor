@@ -14,6 +14,7 @@ import { JsonStateManager } from "./modules/state-management/json-state-manager"
 import { IStateManager } from "./modules/state-management/state-manager";
 import { GeminiSummarizer } from "./modules/summarization/gemini-summarizer";
 import { IActivitySummarizer } from "./modules/summarization/summarizer";
+import { IPatternMatcher, PatternMatcher } from "./modules/filtering/pattern-matcher";
 
 function createActivityFetcher(config: AppConfig): IActivityFetcher {
   const discussionFetcher = new GithubDiscussionFetcher(config);
@@ -44,15 +45,29 @@ function createSummarizer(config: AppConfig): IActivitySummarizer {
   return new GeminiSummarizer(config);
 }
 
+function createPatternMatchers(config: AppConfig): Map<string, IPatternMatcher> {
+  const matchers = new Map<string, IPatternMatcher>();
+  
+  for (const repoConfig of config.repoConfigs) {
+    if (repoConfig.ignorePatterns && repoConfig.ignorePatterns.length > 0) {
+      matchers.set(repoConfig.name, new PatternMatcher(repoConfig.ignorePatterns));
+    }
+  }
+  
+  return matchers;
+}
+
 export function setupApplication(config: AppConfig): ActivityMonitor {
   const stateManager = createStateManager(config);
   const fetcher = createActivityFetcher(config);
   const notifier = createNotifier(config);
   const summarizer = createSummarizer(config);
+  const patternMatchers = createPatternMatchers(config);
 
   const activityProcessor = new ActivityProcessor({
     config,
     summarizer,
+    patternMatchers,
   });
 
   const stateProcessor = new StateProcessor();
