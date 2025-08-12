@@ -14,6 +14,7 @@ GitHub Activity Monitor는 소유하지 않은 공개 GitHub 저장소에서도 
 - Gemini, OpenAI 또는 기타 LLM 제공업체를 사용한 AI 기반 요약
 - Discord 또는 Slack으로 알림 전송
 - 유연한 저장소 모니터링 옵션으로 추적 구성 가능
+- 패턴을 사용한 원하지 않는 활동 필터링 (URL, 키워드, 작성자)
 
 ## 주의: 현재 구현 상태
 
@@ -87,6 +88,12 @@ export const config = {
     {
       name: "owner/repo",
       monitorTypes: ["discussion", "discussion_comment"],
+      // 선택사항: 원하지 않는 활동 필터링
+      ignorePatterns: [
+        "discussions/123", // 특정 discussion ID 무시
+        "이벤트", // "이벤트" 키워드 포함 활동 무시
+        "@bot-name", // 특정 작성자의 활동 무시
+      ],
     },
     // 필요에 따라 더 많은 저장소 추가
   ],
@@ -97,6 +104,20 @@ export const config = {
   llmModelName: "gemini-2.0-flash-lite", // 또는 선호하는 모델
 };
 ```
+
+### 활동 필터링
+
+저장소 구성에서 `ignorePatterns` 옵션을 사용하여 원하지 않는 활동을 필터링할 수 있습니다. 패턴은 형식에 따라 자동으로 감지됩니다:
+
+- **URL/ID 패턴**: `discussions/123`, `issues/456`, `pull/789` - 특정 토론, 이슈 또는 PR 무시
+- **작성자 패턴**: `@username` - 특정 사용자의 활동 무시 (`@` 접두사 사용)
+- **키워드 패턴**: 일반 텍스트 - 제목이나 본문에 해당 키워드가 포함된 활동 무시
+
+사용 예시:
+
+- 이벤트 공지 필터링: "이벤트", "추첨", "참여" 같은 키워드 추가
+- 봇 활동 무시: `@dependabot`, `@renovate-bot` 같은 패턴 사용
+- 특정 토론 건너뛰기: URL에서 토론 ID 사용
 
 ## 사용법
 
@@ -146,6 +167,7 @@ src/
 ├── models/             # 데이터 모델 및 타입
 └── modules/
     ├── activity-fetching/    # GitHub API 상호 작용
+    ├── filtering/            # 활동 필터링 로직
     ├── http-client/          # HTTP 클라이언트 추상화
     ├── notification/         # Discord/Slack 알림
     ├── persistence/          # 파일 시스템 작업
